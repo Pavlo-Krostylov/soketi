@@ -284,6 +284,29 @@ export class HttpHandler {
                 }
             });
         });
+    } 
+
+    eventt(res: HttpResponse) {
+        this.attachMiddleware(res, [
+            this.corkMiddleware,
+            this.jsonBodyMiddleware,
+            this.corsMiddleware,
+            this.appMiddleware,
+            this.authMiddlewaret,
+            this.broadcastEventRateLimitingMiddleware,
+        ]).then(res => {
+            this.checkMessageToBroadcast(res.body as PusherApiMessage, res.app as App).then(message => {
+                this.broadcastMessage(message, res.app.id);
+                this.server.metricsManager.markApiMessage(res.app.id, res.body, { ok: true });
+                this.sendJson(res, { ok: true });
+            }).catch(error => {
+                if (error.code === 400) {
+                    this.badResponse(res, error.message);
+                } else if (error.code === 413) {
+                    this.entityTooLargeResponse(res, error.message);
+                }
+            });
+        });
     }
 
     batchEvents(res: HttpResponse) {
@@ -483,6 +506,10 @@ export class HttpHandler {
 
             return this.unauthorizedResponse(res, 'The secret authentication failed');
         });
+    }
+
+    protected authMiddlewaret(res: HttpResponse, next: CallableFunction): any {        
+        return next(null, res);
     }
 
     protected readRateLimitingMiddleware(res: HttpResponse, next: CallableFunction): any {
