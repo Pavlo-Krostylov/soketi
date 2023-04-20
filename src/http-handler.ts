@@ -269,7 +269,7 @@ export class HttpHandler {
             this.jsonBodyMiddleware,
             this.corsMiddleware,
             this.appMiddleware,
-            this.authMiddleware,
+            //this.authMiddleware,
             this.broadcastEventRateLimitingMiddleware,
         ]).then(res => {
             this.checkMessageToBroadcast(res.body as PusherApiMessage, res.app as App).then(message => {
@@ -292,7 +292,6 @@ export class HttpHandler {
             this.jsonBodyMiddleware,
             this.corsMiddleware,
             this.appMiddleware,
-            this.authMiddlewaret,
             this.broadcastEventRateLimitingMiddleware,
         ]).then(res => {
             this.checkMessageToBroadcast(res.body as PusherApiMessage, res.app as App).then(message => {
